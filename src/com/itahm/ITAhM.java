@@ -296,7 +296,8 @@ public class ITAhM extends HTTPServer implements HTTPListener {
 		config.put("root", "F:\\ITAhM\\project\\demo\\kt\\2019");
 		
 		if (!config.has("root")) {
-			config.put("root", new File(Agent.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent());
+			config.put("root",
+				new File(Agent.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent());
 		}
 		
 		ITAhM itahm = new ITAhM(config);
