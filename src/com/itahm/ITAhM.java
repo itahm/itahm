@@ -24,7 +24,7 @@ import com.itahm.json.JSONObject;
 public class ITAhM extends HTTPServer implements HTTPListener {
 
 	private byte [] event = null;
-	private final static int SESS_TIMEOUT = 60;
+	private final static int SESS_TIMEOUT = 3600;
 	
 	public ITAhM(JSONObject config) throws IOException {
 		super(config);
