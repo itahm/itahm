@@ -217,8 +217,8 @@ public class ITAhM extends HTTPServer implements HTTPListener {
 				else {
 					JSONObject event = null;
 					
-					if (data.has("index")) {
-						event = Agent.getEvent(data.getLong("event"));
+					if (data.has("event")) {
+						event = Agent.getEvent(data.getString("event"));
 						
 					}
 					
@@ -292,8 +292,6 @@ public class ITAhM extends HTTPServer implements HTTPListener {
 				break;
 			}
 		}
-		
-		config.put("root", "F:\\ITAhM\\project\\demo\\kt\\2019");
 		
 		if (!config.has("root")) {
 			config.put("root",
