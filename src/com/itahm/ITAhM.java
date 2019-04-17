@@ -12,16 +12,20 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Pattern;
 
-import com.itahm.http.HTTPListener;
+import org.snmp4j.PDU;
+import org.snmp4j.smi.OID;
+import org.snmp4j.smi.Variable;
+
 import com.itahm.http.HTTPServer;
 import com.itahm.http.Request;
+import com.itahm.enterprise.Enterprise;
 import com.itahm.http.Connection;
 import com.itahm.http.Response;
 import com.itahm.http.Session;
 import com.itahm.json.JSONException;
 import com.itahm.json.JSONObject;
 
-public class ITAhM extends HTTPServer implements HTTPListener {
+public class ITAhM extends HTTPServer implements Server {
 
 	private byte [] event = null;
 	private final static int SESS_TIMEOUT = 3600;
@@ -120,7 +124,7 @@ public class ITAhM extends HTTPServer implements HTTPListener {
 		
 		System.out.format("Agent loading...\n");
 		
-		Agent.Config.listener(this);
+		Agent.Config.server(this);
 		
 		try {	
 			Agent.start();
@@ -136,6 +140,11 @@ public class ITAhM extends HTTPServer implements HTTPListener {
 	@Override
 	public void doGet(Request request, Response response) {
 		String uri = request.getRequestURI();
+		
+		if ("/".equals(uri)) {
+			uri = "/index.html";
+		}
+		
 		File file = new File(Agent.Config.root().getParentFile(), uri);
 		
 		if (!Pattern.compile("^/data/.*").matcher(uri).matches() && file.isFile()) {
@@ -270,7 +279,7 @@ public class ITAhM extends HTTPServer implements HTTPListener {
 		JSONObject config = new JSONObject()
 			//.put("expire", "0")
 			//.put("limit", "0")
-			//.put("license", "XXXXXXXXXXXX")
+			//.put("license", "1866daec7398")
 			;
 		
 		for (int i=0, _i=args.length; i<_i; i++) {
@@ -295,7 +304,8 @@ public class ITAhM extends HTTPServer implements HTTPListener {
 		
 		if (!config.has("root")) {
 			config.put("root",
-				new File(Agent.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent());
+				new File(Agent.class.
+					getProtectionDomain().getCodeSource().getLocation().toURI()).getParent());
 		}
 		
 		ITAhM itahm = new ITAhM(config);
@@ -322,5 +332,15 @@ public class ITAhM extends HTTPServer implements HTTPListener {
 		if (broadcast) {
 			// TODO customize for sms or app
 		}
+	}
+
+	@Override
+	public void setEnterprisePDU(PDU pdu, String pen) {
+		Enterprise.setEnterprisePDU(pdu, pen);
+	}
+
+	@Override
+	public boolean parseEnterprise(ITAhMNode node, OID response, Variable variable, OID request) {
+		return Enterprise.parseEnterprise(node, response, variable, request);
 	}
 }
